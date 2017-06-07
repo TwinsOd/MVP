@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="width_id_edit_text">96dp</dimen>
+    <dimen name="margin_main_activity">16dp</dimen>
+</resources>

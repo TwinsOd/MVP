@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.example.user.jotime.data.model.ItemListModel;
 import com.example.user.jotime.data.model.UserModel;
-import com.example.user.jotime.ui.LoadData;
+import com.example.user.jotime.ui.LoadDataListener;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -16,25 +16,29 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class TimeRunnable implements Runnable {
 
     private UserModel model;
-    private LoadData loadData;
-    public TimeRunnable(UserModel model, LoadData loadData){
+    private LoadDataListener loadDataListener;
+
+    public TimeRunnable(UserModel model, LoadDataListener loadDataListener) {
         this.model = model;
-        this.loadData = loadData;
+        this.loadDataListener = loadDataListener;
     }
 
     @Override
     public void run() {
         final Map<String, String> params = new HashMap<>();
         params.put("card_code_dec", String.valueOf(model.getId()));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         params.put("date_from", formatter.format(model.getFromDate()));
         params.put("date_till", formatter.format(model.getTillDate()));
-        Log.i("TimeRunnable", "formatter.format(model.getTillDate()): " +  formatter.format(model.getTillDate()));
+        Log.i("TimeRunnable", "formatter.format(model.getTillDate()): " + formatter.format(model.getTillDate()));
 
         final Element body;
         List<ItemListModel> listModels = new ArrayList<>();
@@ -45,24 +49,27 @@ public class TimeRunnable implements Runnable {
 
             List<String> missingTimeList = getMissingTime(body);
             List<String> datesList = getDates(body);
-
-            for (String str:missingTimeList){
-                Log.i("TimeRunnable", "missingTime: " +  str);
-                listModels.add(new ItemListModel(null,str));
-            }
+            List<String> listLog = getListLog(body);
 
             int i = 0;
-            for (String str:datesList){
-                Log.i("TimeRunnable", "Dates: " +  str);
-                listModels.get(i).setDates(str);
+            for (String missingTime : missingTimeList) {
+                listModels.add(new ItemListModel(datesList.get(i), missingTime));
                 i++;
             }
 
-            loadData.success(listModels);
+            i = -1;
+            for (String str : listLog) {
+                if (str.lastIndexOf("Дата") == 0) {
+                    i++;
+                } else
+                    listModels.get(i).getLogList().add(str);
+            }
+
+            loadDataListener.success(listModels);
 
         } catch (IOException e) {
             e.printStackTrace();
-            loadData.error();
+            loadDataListener.error();
         }
     }
 
@@ -78,6 +85,17 @@ public class TimeRunnable implements Runnable {
         final List<String> list = new ArrayList<>();
         Elements elements = body.select("table.stat tr:lt(2)>td:lt(1)");
         for (Element e : elements) list.add(e.text());
+        return list;
+    }
+
+    private static List<String> getListLog(Element body) {
+        final List<String> list = new ArrayList<>();
+        Elements elements = body.select("table.events tr");
+        for (Element e : elements) {
+            if (e.text().lastIndexOf("Дата") == 0) Log.i("TimeRunnable", "******************");
+            list.add(e.text());
+            Log.i("TimeRunnable", e.text());
+        }
         return list;
     }
 }

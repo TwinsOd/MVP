@@ -1,4 +1,4 @@
-package com.example.user.jotime.ui;
+package com.example.user.jotime.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

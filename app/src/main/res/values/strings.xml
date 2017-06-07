@@ -1,17 +1,21 @@
 <resources>
     <string name="app_name">JoTime</string>
-    <string name="enter_id">enter id card</string>
+    <string name="enter_id">Введите номер карты</string>
     <string name="enter">enter</string>
-    <string name="interval">интервал</string>
+    <string name="interval">Интервал</string>
     <string name="dash">-</string>
-    <string name="graph">График</string>
+    <string name="graph">Список</string>
     <string name="missing_time">Пропуск</string>
     <string name="date">Дата</string>
     <string name="no_connection_to_wi_fi">Нет подключения к wi-fi</string>
     <string name="error_loading_data">ошибка загрузки данных</string>
     <string name="title_main_activity">jo.time - Отчет (сотрудник)</string>
     <string name="choose_new_id">напишите новый номер карты</string>
-    <string name="ok">ok</string>
-    <string name="cancel">cancel</string>
+    <string name="ok">ок</string>
+    <string name="cancel">отмена</string>
     <string name="fill_id">заполните номер карты</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_id_card">не указана карта</string>
 </resources>

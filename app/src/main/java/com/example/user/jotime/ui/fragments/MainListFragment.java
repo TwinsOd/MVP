@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,13 +19,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.user.jotime.App;
 import com.example.user.jotime.R;
-import com.example.user.jotime.data.SharedPreference.SharedPreferenceManager;
 import com.example.user.jotime.data.callback.TimeCallback;
 import com.example.user.jotime.data.model.ItemModel;
 import com.example.user.jotime.data.model.SettingModel;
-import com.example.user.jotime.data.repository.Repository;
-import com.example.user.jotime.data.repository.RepositoryImpl;
 import com.example.user.jotime.ui.RunDetailsListener;
 import com.example.user.jotime.ui.adapter.TimeAdapter;
 import com.example.user.jotime.ui.customView.DateTextView;
@@ -48,9 +47,31 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     private ProgressBar progressBar;
     private Context mContext;
     private RunDetailsListener runDetailsListener;
+    private int id;
 
     public MainListFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        App.getRepository().getId(new TimeCallback<Integer>() {
+            @Override
+            public void onEmit(Integer data) {
+                id = data;
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
     }
 
     @Override
@@ -59,7 +80,6 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         mContext = getContext();
 
-        int id = SharedPreferenceManager.getId(mContext);
         settingModel = new SettingModel(id);
         Calendar calendar = Calendar.getInstance();
         settingModel.setTillDate(calendar.getTimeInMillis());
@@ -160,8 +180,7 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     private void loadData() {
         progressBar.setVisibility(View.VISIBLE);
 
-        Repository repository = new RepositoryImpl();
-        repository.getList(settingModel, new TimeCallback<List<ItemModel>>() {
+        App.getRepository().getList(settingModel, new TimeCallback<List<ItemModel>>() {
             @Override
             public void onEmit(final List<ItemModel> data) {
                 getActivity().runOnUiThread(new Runnable() {

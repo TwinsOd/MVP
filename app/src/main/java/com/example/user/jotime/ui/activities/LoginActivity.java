@@ -7,8 +7,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.user.jotime.App;
 import com.example.user.jotime.R;
-import com.example.user.jotime.data.SharedPreference.SharedPreferenceManager;
+import com.example.user.jotime.data.callback.TimeCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -17,18 +18,35 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        final EditText editTextId = (EditText)findViewById(R.id.id_edit_text);
+        final EditText editTextId = (EditText) findViewById(R.id.id_edit_text);
 
         findViewById(R.id.enter_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String idText = editTextId.getText().toString();
-                if (!idText.isEmpty()){
-                    SharedPreferenceManager.saveId(Integer.valueOf(idText), LoginActivity.this);
-                    startMainActivity();
-                }else {
+                if (!idText.isEmpty()) {
+                    saveId(Integer.valueOf(idText));
+                } else {
                     Toast.makeText(LoginActivity.this, R.string.fill_id, Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }
+
+    private void saveId(Integer id) {
+        App.getRepository().setId(id, new TimeCallback() {
+            @Override
+            public void onEmit(Object data) {
+                startMainActivity();
+            }
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
             }
         });
     }

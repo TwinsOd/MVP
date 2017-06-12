@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.example.user.jotime.App;
 import com.example.user.jotime.R;
 import com.example.user.jotime.data.SharedPreference.SharedPreferenceManager;
+import com.example.user.jotime.data.callback.TimeCallback;
 import com.example.user.jotime.data.utils.NetworkUtils;
 
 public class SplashActivity extends AppCompatActivity {
@@ -18,11 +20,27 @@ public class SplashActivity extends AppCompatActivity {
         if(!NetworkUtils.checkWifiOnAndConnected(getApplicationContext()))
             Toast.makeText(this, R.string.no_connection_to_wi_fi, Toast.LENGTH_LONG).show();
 
-        if (SharedPreferenceManager.getId(this) == 0){
-            startLoginActivity();
-        }else {
-            startMainActivity();
-        }
+        App.getRepository().getId(new TimeCallback<Integer>() {
+            @Override
+            public void onEmit(Integer data) {
+                if (data.equals(0)){
+                    startLoginActivity();
+                }else {
+                    startMainActivity();
+                }
+            }
+
+            @Override
+            public void onCompleted() {
+                startLoginActivity();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                startLoginActivity();
+            }
+        });
+
     }
 
     private void startMainActivity() {

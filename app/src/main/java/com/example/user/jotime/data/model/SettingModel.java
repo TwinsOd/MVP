@@ -1,12 +1,12 @@
 package com.example.user.jotime.data.model;
 
 
-public class UserModel {
+public class SettingModel {
     private int id;
     private long fromDate;
     private long tillDate;
 
-    public UserModel(int id) {
+    public SettingModel(int id) {
         this.id = id;
     }
 

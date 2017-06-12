@@ -1,4 +1,4 @@
-package com.example.user.jotime.adapter;
+package com.example.user.jotime.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.user.jotime.R;
-import com.example.user.jotime.data.model.ItemListModel;
+import com.example.user.jotime.data.model.ItemModel;
 import com.example.user.jotime.ui.RunDetailsListener;
 
 import java.text.ParseException;
@@ -27,10 +27,10 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.CommentHolder>
     @NonNull
     private final Context context;
     @NonNull
-    private final List<ItemListModel> comments;
+    private final List<ItemModel> comments;
     private final RunDetailsListener runDetailsListener;
 
-    public TimeAdapter(@NonNull Context context, @NonNull List<ItemListModel> comments, RunDetailsListener listener) {
+    public TimeAdapter(@NonNull Context context, @NonNull List<ItemModel> comments, RunDetailsListener listener) {
         this.context = context;
         this.comments = comments;
         runDetailsListener = listener;
@@ -44,7 +44,7 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.CommentHolder>
 
     @Override
     public void onBindViewHolder(CommentHolder holder, int position) {
-        ItemListModel model = comments.get(position);
+        ItemModel model = comments.get(position);
         holder.missingText.setText(model.getMissingTime());
         holder.cardView.setTag(position);
         holder.datesText.setText(model.getDates());

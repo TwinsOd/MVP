@@ -1,11 +1,11 @@
-package com.example.user.jotime.net;
+package com.example.user.jotime.data.tasks;
 
 
 import android.util.Log;
 
-import com.example.user.jotime.data.model.ItemListModel;
-import com.example.user.jotime.data.model.UserModel;
-import com.example.user.jotime.ui.LoadDataListener;
+import com.example.user.jotime.data.callback.TimeCallback;
+import com.example.user.jotime.data.model.ItemModel;
+import com.example.user.jotime.data.model.SettingModel;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -22,12 +22,12 @@ import java.util.TimeZone;
 
 public class TimeRunnable implements Runnable {
 
-    private UserModel model;
-    private LoadDataListener loadDataListener;
+    private SettingModel model;
+    private TimeCallback<List<ItemModel>> timeCallback;
 
-    public TimeRunnable(UserModel model, LoadDataListener loadDataListener) {
+    public TimeRunnable(SettingModel model, TimeCallback<List<ItemModel>> callback) {
         this.model = model;
-        this.loadDataListener = loadDataListener;
+        timeCallback = callback;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class TimeRunnable implements Runnable {
         Log.i("TimeRunnable", "formatter.format(model.getTillDate()): " + formatter.format(model.getTillDate()));
 
         final Element body;
-        List<ItemListModel> listModels = new ArrayList<>();
+        List<ItemModel> listModels = new ArrayList<>();
         try {
             String URL = "http://jo.time";
             body = Jsoup.connect(URL).data(params).post().body();
@@ -53,7 +53,7 @@ public class TimeRunnable implements Runnable {
 
             int i = 0;
             for (String missingTime : missingTimeList) {
-                listModels.add(new ItemListModel(datesList.get(i), missingTime));
+                listModels.add(new ItemModel(datesList.get(i), missingTime));
                 i++;
             }
 
@@ -65,11 +65,11 @@ public class TimeRunnable implements Runnable {
                     listModels.get(i).getLogList().add(str);
             }
 
-            loadDataListener.success(listModels);
+            timeCallback.onEmit(listModels);
 
         } catch (IOException e) {
             e.printStackTrace();
-            loadDataListener.error();
+            timeCallback.onError(e);
         }
     }
 

@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import com.example.user.jotime.R;
 import com.example.user.jotime.data.SharedPreference.SharedPreferenceManager;
-import com.example.user.jotime.utils.NetworkUtils;
+import com.example.user.jotime.data.utils.NetworkUtils;
 
 public class SplashActivity extends AppCompatActivity {
 

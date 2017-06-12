@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.user.jotime.R;
-import com.example.user.jotime.adapter.LogAdapter;
+import com.example.user.jotime.ui.adapter.LogAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

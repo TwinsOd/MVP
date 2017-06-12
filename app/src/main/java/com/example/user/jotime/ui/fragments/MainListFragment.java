@@ -19,30 +19,29 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.user.jotime.R;
-import com.example.user.jotime.adapter.TimeAdapter;
 import com.example.user.jotime.data.SharedPreference.SharedPreferenceManager;
-import com.example.user.jotime.data.model.ItemListModel;
-import com.example.user.jotime.data.model.UserModel;
-import com.example.user.jotime.net.TimeRunnable;
-import com.example.user.jotime.ui.LoadDataListener;
+import com.example.user.jotime.data.callback.TimeCallback;
+import com.example.user.jotime.data.model.ItemModel;
+import com.example.user.jotime.data.model.SettingModel;
+import com.example.user.jotime.data.repository.Repository;
+import com.example.user.jotime.data.repository.RepositoryImpl;
 import com.example.user.jotime.ui.RunDetailsListener;
+import com.example.user.jotime.ui.adapter.TimeAdapter;
 import com.example.user.jotime.ui.customView.DateTextView;
 import com.example.user.jotime.ui.customView.PersonTextView;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainListFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, LoadDataListener {
+public class MainListFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
     private final String FROM_INTERVAL_KEY = "from_interval_key";
     private final String TILL_INTERVAL_KEY = "till_interval_key";
     private PersonTextView idText;
-    private UserModel userModel;
+    private SettingModel settingModel;
     private DateTextView fromDateText;
     private DateTextView tillDateText;
     private RecyclerView recyclerView;
@@ -61,19 +60,19 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
         mContext = getContext();
 
         int id = SharedPreferenceManager.getId(mContext);
-        userModel = new UserModel(id);
+        settingModel = new SettingModel(id);
         Calendar calendar = Calendar.getInstance();
-        userModel.setTillDate(calendar.getTimeInMillis());
+        settingModel.setTillDate(calendar.getTimeInMillis());
         calendar.add(Calendar.DAY_OF_MONTH, -7);
-        userModel.setFromDate(calendar.getTimeInMillis());
+        settingModel.setFromDate(calendar.getTimeInMillis());
         idText = (PersonTextView) view.findViewById(R.id.title_id);
         idText.setId(id);
         idText.setOnClickListener(this);
         fromDateText = (DateTextView) view.findViewById(R.id.from_interval);
-        fromDateText.setLongDate(userModel.getFromDate());
+        fromDateText.setLongDate(settingModel.getFromDate());
         fromDateText.setOnClickListener(this);
         tillDateText = (DateTextView) view.findViewById(R.id.till_interval);
-        tillDateText.setLongDate(userModel.getTillDate());
+        tillDateText.setLongDate(settingModel.getTillDate());
         tillDateText.setOnClickListener(this);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycle_view_time);
@@ -93,15 +92,15 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
                 showDialogChangeId();
                 break;
             case R.id.from_interval:
-                showDatePickerDialog(userModel.getFromDate(), FROM_INTERVAL_KEY);
+                showDatePickerDialog(settingModel.getFromDate(), FROM_INTERVAL_KEY);
                 break;
             case R.id.till_interval:
-                showDatePickerDialog(userModel.getTillDate(), TILL_INTERVAL_KEY);
+                showDatePickerDialog(settingModel.getTillDate(), TILL_INTERVAL_KEY);
                 break;
         }
     }
 
-    public void setDetailsListener(RunDetailsListener listener){
+    public void setDetailsListener(RunDetailsListener listener) {
         runDetailsListener = listener;
     }
 
@@ -126,9 +125,9 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
         dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (idEditText.getText().toString().isEmpty()){
+                if (idEditText.getText().toString().isEmpty()) {
                     Toast.makeText(mContext, R.string.no_id_card, Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     idText.setId(idEditText.getText().toString());
                     loadData();
                 }
@@ -145,45 +144,50 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     }
 
 
-
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Calendar calendar = new GregorianCalendar(year, month, dayOfMonth);
         if (view.getTag().toString().equals(FROM_INTERVAL_KEY)) {
-            userModel.setFromDate(calendar.getTimeInMillis());
-            fromDateText.setLongDate(userModel.getFromDate());
-        } else if (view.getTag().toString().equals(TILL_INTERVAL_KEY)){
-            userModel.setTillDate(calendar.getTimeInMillis());
-            tillDateText.setLongDate(userModel.getTillDate());
+            settingModel.setFromDate(calendar.getTimeInMillis());
+            fromDateText.setLongDate(settingModel.getFromDate());
+        } else if (view.getTag().toString().equals(TILL_INTERVAL_KEY)) {
+            settingModel.setTillDate(calendar.getTimeInMillis());
+            tillDateText.setLongDate(settingModel.getTillDate());
         }
         loadData();
     }
 
-    @Override
-    public void success(final List<ItemListModel> list) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TimeAdapter timeAdapter = new TimeAdapter(mContext, list, runDetailsListener);
-                recyclerView.setAdapter(timeAdapter);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    @Override
-    public void error() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mContext, R.string.error_loading_data, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     private void loadData() {
         progressBar.setVisibility(View.VISIBLE);
-        Executor executorTime = Executors.newSingleThreadExecutor();
-        executorTime.execute(new TimeRunnable(userModel, this));
+
+        Repository repository = new RepositoryImpl();
+        repository.getList(settingModel, new TimeCallback<List<ItemModel>>() {
+            @Override
+            public void onEmit(final List<ItemModel> data) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TimeAdapter timeAdapter = new TimeAdapter(mContext, data, runDetailsListener);
+                        recyclerView.setAdapter(timeAdapter);
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onCompleted() {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, R.string.error_loading_data, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
     }
 }

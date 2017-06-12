@@ -1,4 +1,4 @@
-package com.example.user.jotime.utils;
+package com.example.user.jotime.data.utils;
 
 
 import android.annotation.SuppressLint;

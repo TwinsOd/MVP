@@ -3,12 +3,12 @@ package com.example.user.jotime.data.model;
 
 import java.util.ArrayList;
 
-public class ItemListModel {
+public class ItemModel {
     private String dates;
     private String missingTime;
     private ArrayList<String> logList = new ArrayList<>();
 
-    public ItemListModel(String dates, String missingTime) {
+    public ItemModel(String dates, String missingTime) {
         this.dates = dates;
         this.missingTime = missingTime;
     }

@@ -28,10 +28,8 @@ public class ListPresenterIml extends BasePresenter<ListView> implements ListPre
         repository.getId(new TimeCallback<Integer>() {
             @Override
             public void onEmit(Integer data) {
-                if (data != null) {
-                    if (getView() != null)
-                        getView().showId(data);
-                }
+                if (data != null && getView() != null)
+                    getView().showId(data);
             }
 
             @Override
@@ -48,27 +46,23 @@ public class ListPresenterIml extends BasePresenter<ListView> implements ListPre
 
     @Override
     public void loadData(@NonNull SettingModel model) {
+        showProgress();
         repository.getList(model, new TimeCallback<List<ItemModel>>() {
             @Override
             public void onEmit(final List<ItemModel> data) {
-                getView().showData(data);
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        TimeAdapter timeAdapter = new TimeAdapter(mContext, data, runDetailsListener);
-//                        recyclerView.setAdapter(timeAdapter);
-//                    }
-//                });
+                if (data != null && getView() != null)
+                    getView().showData(data);
             }
 
             @Override
             public void onCompleted() {
-
+                hideProgress();
             }
 
             @Override
             public void onError(Throwable throwable) {
-                getView().showError(throwable.getMessage());
+                if (getView() != null)
+                    getView().showError(throwable.getMessage());
             }
         });
     }
@@ -79,4 +73,13 @@ public class ListPresenterIml extends BasePresenter<ListView> implements ListPre
             listener.clickToRun(data);
     }
 
+    private void showProgress() {
+        if (getView() != null)
+            getView().showProgress();
+    }
+
+    private void hideProgress() {
+        if (getView() != null)
+            getView().hideProgress();
+    }
 }

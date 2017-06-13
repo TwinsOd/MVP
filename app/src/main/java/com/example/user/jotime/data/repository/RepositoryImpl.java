@@ -40,6 +40,7 @@ public class RepositoryImpl implements Repository{
     public void getId(@NonNull TimeCallback<Integer> callback) {
         int id = sharedPreferences.getInt(KEY_ID_PREFERENCES, 0);
         callback.onEmit(id);
+        callback.onCompleted();
     }
 
     @Override

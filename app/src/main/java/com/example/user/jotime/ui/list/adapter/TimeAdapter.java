@@ -1,11 +1,10 @@
-package com.example.user.jotime.ui.adapter;
+package com.example.user.jotime.ui.list.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 
 import com.example.user.jotime.R;
 import com.example.user.jotime.data.model.ItemModel;
-import com.example.user.jotime.ui.RunDetailsListener;
+import com.example.user.jotime.ui.list.view.DetailsInteractors;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,13 +26,13 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.CommentHolder>
     @NonNull
     private final Context context;
     @NonNull
-    private final List<ItemModel> comments;
-    private final RunDetailsListener runDetailsListener;
+    private List<ItemModel> list;
+    private final DetailsInteractors listener;
 
-    public TimeAdapter(@NonNull Context context, @NonNull List<ItemModel> comments, RunDetailsListener listener) {
+    public TimeAdapter(@NonNull Context context, @NonNull List<ItemModel> list, DetailsInteractors listener) {
         this.context = context;
-        this.comments = comments;
-        runDetailsListener = listener;
+        this.list = list;
+        this.listener = listener;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.CommentHolder>
 
     @Override
     public void onBindViewHolder(CommentHolder holder, int position) {
-        ItemModel model = comments.get(position);
+        ItemModel model = list.get(position);
         holder.missingText.setText(model.getMissingTime());
         holder.cardView.setTag(position);
         holder.datesText.setText(model.getDates());
@@ -55,7 +54,8 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.CommentHolder>
 
     @Override
     public int getItemCount() {
-        return comments.size();
+        if (list == null) return 0;
+        return list.size();
     }
 
     private boolean changeLimitTime(String time) {
@@ -72,14 +72,16 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.CommentHolder>
         }
     }
 
+    public void update(List<ItemModel> list) {
+        this.list = list;
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public void onClick(View v) {
-        Log.i("TimeAdapter", "click to " + (int) v.getTag());
-//        for (String log : comments.get((int) v.getTag()).getLogList()) {
-//            Log.i("TimeAdapter", "log - " + log);
-//        }
-        if (runDetailsListener != null)
-            runDetailsListener.clickToRun(comments.get((int) v.getTag()).getLogList());
+        if (listener != null)
+            listener.onClick(list.get((int) v.getTag()).getLogList());
     }
 
     static class CommentHolder extends RecyclerView.ViewHolder {

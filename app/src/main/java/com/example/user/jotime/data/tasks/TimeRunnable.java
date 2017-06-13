@@ -1,6 +1,7 @@
 package com.example.user.jotime.data.tasks;
 
 
+import android.os.Handler;
 import android.util.Log;
 
 import com.example.user.jotime.data.callback.TimeCallback;
@@ -24,10 +25,12 @@ public class TimeRunnable implements Runnable {
 
     private SettingModel model;
     private TimeCallback<List<ItemModel>> timeCallback;
+    private Handler mainUiHandler;
 
-    public TimeRunnable(SettingModel model, TimeCallback<List<ItemModel>> callback) {
+    public TimeRunnable(SettingModel model, TimeCallback<List<ItemModel>> callback, Handler mainUiHandler) {
         this.model = model;
         timeCallback = callback;
+        this.mainUiHandler = mainUiHandler;
     }
 
     @Override
@@ -65,11 +68,16 @@ public class TimeRunnable implements Runnable {
                     listModels.get(i).getLogList().add(str);
             }
 
-            timeCallback.onEmit(listModels);
-
-        } catch (IOException e) {
+            mainUiHandler.post(new CallbackToUI(listModels));
+        } catch (final IOException e) {
             e.printStackTrace();
-            timeCallback.onError(e);
+
+            mainUiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    timeCallback.onError(e);
+                }
+            });
         }
     }
 
@@ -97,5 +105,20 @@ public class TimeRunnable implements Runnable {
             Log.i("TimeRunnable", e.text());
         }
         return list;
+    }
+
+    private class CallbackToUI implements Runnable {
+
+        private final List<ItemModel> listModels;
+
+        CallbackToUI(List<ItemModel> postModels) {
+            this.listModels = postModels;
+        }
+
+        @Override
+        public void run() {
+            timeCallback.onEmit(listModels);
+            timeCallback.onCompleted();
+        }
     }
 }

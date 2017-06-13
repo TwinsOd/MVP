@@ -6,6 +6,9 @@ public class SettingModel {
     private long fromDate;
     private long tillDate;
 
+    public SettingModel() {
+    }
+
     public SettingModel(int id) {
         this.id = id;
     }

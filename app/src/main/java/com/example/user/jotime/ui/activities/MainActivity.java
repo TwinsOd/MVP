@@ -5,12 +5,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.user.jotime.App;
 import com.example.user.jotime.R;
-import com.example.user.jotime.ui.RunDetailsListener;
-import com.example.user.jotime.ui.fragments.DetailsFragment;
-import com.example.user.jotime.ui.fragments.MainListFragment;
+import com.example.user.jotime.ui.details.view.DetailsFragment;
+import com.example.user.jotime.ui.list.presenter.ListPresenter;
+import com.example.user.jotime.ui.list.presenter.ListPresenterIml;
+import com.example.user.jotime.ui.list.view.MainListFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RunDetailsListener {
@@ -20,12 +21,19 @@ public class MainActivity extends AppCompatActivity implements RunDetailsListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction mFragmentTransaction = fragmentManager.beginTransaction();
+        startListFragment();
+    }
+
+    private void startListFragment() {
+        ListPresenter listPresenter = new ListPresenterIml(this, App.getRepository());
         MainListFragment fragment = new MainListFragment();
-        fragment.setDetailsListener(this);
-        mFragmentTransaction.replace(R.id.container_main, fragment);
-        mFragmentTransaction.commit();
+        fragment.bindPresenter(listPresenter);
+        listPresenter.bindView(fragment);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.container_main, fragment)
+                .commit();
     }
 
     @Override
@@ -35,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements RunDetailsListene
     }
 
     @Override
-    public void clickToRun(ArrayList<String> logList) {
+    public void clickToRun(List<String> logList) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction mFragmentTransaction = fragmentManager.beginTransaction();
         mFragmentTransaction.replace(R.id.container_main, DetailsFragment.getInstance(logList));

@@ -1,4 +1,4 @@
-package com.example.user.jotime.ui.adapter;
+package com.example.user.jotime.ui.details.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;

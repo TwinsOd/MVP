@@ -1,4 +1,4 @@
-package com.example.user.jotime.ui.fragments;
+package com.example.user.jotime.ui.details.view;
 
 
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.user.jotime.R;
-import com.example.user.jotime.ui.adapter.LogAdapter;
+import com.example.user.jotime.ui.details.adapter.LogAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +30,10 @@ public class DetailsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static DetailsFragment getInstance(ArrayList<String> list) {
+    public static DetailsFragment getInstance(List<String> list) {
         DetailsFragment postFragment = new DetailsFragment();
         Bundle args = new Bundle(1);
-        args.putStringArrayList(PARAM_LIST, list);
+        args.putStringArrayList(PARAM_LIST, new ArrayList<>(list));
         postFragment.setArguments(args);
         return postFragment;
     }

@@ -1,8 +1,6 @@
 package com.example.user.jotime.ui.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.user.jotime.App;
@@ -44,10 +42,10 @@ public class MainActivity extends AppCompatActivity implements RunDetailsListene
 
     @Override
     public void clickToRun(List<String> logList) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction mFragmentTransaction = fragmentManager.beginTransaction();
-        mFragmentTransaction.replace(R.id.container_main, DetailsFragment.getInstance(logList));
-        mFragmentTransaction.addToBackStack("DetailsFragment");
-        mFragmentTransaction.commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container_main, DetailsFragment.getInstance(logList))
+                .addToBackStack("DetailsFragment")
+                .commit();
     }
 }

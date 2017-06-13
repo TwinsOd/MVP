@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.example.user.jotime.App;
 import com.example.user.jotime.R;
-import com.example.user.jotime.data.SharedPreference.SharedPreferenceManager;
 import com.example.user.jotime.data.callback.TimeCallback;
 import com.example.user.jotime.data.utils.NetworkUtils;
 

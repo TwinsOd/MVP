@@ -13,7 +13,7 @@ public interface Repository {
 
     void getList(SettingModel model, @NonNull TimeCallback<List<ItemModel>> callback);
 
-    void getId(@NonNull TimeCallback<Integer> callback);
+    void getModel(@NonNull TimeCallback<SettingModel> callback);
 
-    void setId(int id, @NonNull TimeCallback callback);
+    void saveModel(SettingModel model, @NonNull TimeCallback callback);
 }

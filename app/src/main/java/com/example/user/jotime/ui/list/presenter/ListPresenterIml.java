@@ -24,12 +24,12 @@ public class ListPresenterIml extends BasePresenter<ListView> implements ListPre
     }
 
     @Override
-    public void getId() {
-        repository.getId(new TimeCallback<Integer>() {
+    public void getBaseData() {
+        repository.getModel(new TimeCallback<SettingModel>() {
             @Override
-            public void onEmit(Integer data) {
+            public void onEmit(SettingModel data) {
                 if (data != null && getView() != null)
-                    getView().showId(data);
+                    getView().showBaseData(data);
             }
 
             @Override
@@ -51,7 +51,7 @@ public class ListPresenterIml extends BasePresenter<ListView> implements ListPre
             @Override
             public void onEmit(final List<ItemModel> data) {
                 if (data != null && getView() != null)
-                    getView().showData(data);
+                    getView().showList(data);
             }
 
             @Override
@@ -71,6 +71,27 @@ public class ListPresenterIml extends BasePresenter<ListView> implements ListPre
     public void onDateClick(List<String> data) {
         if (listener != null)
             listener.clickToRun(data);
+    }
+
+    @Override
+    public void saveBaseData(@NonNull SettingModel model) {
+        repository.saveModel(model, new TimeCallback() {
+            @Override
+            public void onEmit(Object data) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                if (getView() != null)
+                    getView().showError(throwable.getMessage());
+            }
+        });
     }
 
     private void showProgress() {

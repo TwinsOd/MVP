@@ -10,8 +10,12 @@ import android.widget.Toast;
 import com.example.user.jotime.App;
 import com.example.user.jotime.R;
 import com.example.user.jotime.data.callback.TimeCallback;
+import com.example.user.jotime.data.model.SettingModel;
+
+import static com.example.user.jotime.AppConstans.DEFAULT_INTERVAL;
 
 public class LoginActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +38,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveId(Integer id) {
-        App.getRepository().setId(id, new TimeCallback() {
+        App.getRepository().saveModel(new SettingModel(id, DEFAULT_INTERVAL), new TimeCallback() {
             @Override
             public void onEmit(Object data) {
-                startMainActivity();
+
             }
 
             @Override
             public void onCompleted() {
+                startMainActivity();
             }
 
             @Override

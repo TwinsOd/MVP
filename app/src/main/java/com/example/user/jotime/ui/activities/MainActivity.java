@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements RunDetailsListene
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container_main, DetailsFragment.getInstance(logList))
-                .addToBackStack("DetailsFragment")
+                .addToBackStack(null)
                 .commit();
     }
 }

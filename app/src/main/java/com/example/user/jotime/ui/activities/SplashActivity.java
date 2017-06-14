@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.example.user.jotime.App;
 import com.example.user.jotime.R;
 import com.example.user.jotime.data.callback.TimeCallback;
+import com.example.user.jotime.data.model.SettingModel;
 import com.example.user.jotime.data.utils.NetworkUtils;
 
 public class SplashActivity extends AppCompatActivity {
@@ -16,22 +17,22 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(!NetworkUtils.checkWifiOnAndConnected(getApplicationContext()))
+        if (!NetworkUtils.checkWifiOnAndConnected(getApplicationContext()))
             Toast.makeText(this, R.string.no_connection_to_wi_fi, Toast.LENGTH_LONG).show();
 
-        App.getRepository().getId(new TimeCallback<Integer>() {
+        App.getRepository().getModel(new TimeCallback<SettingModel>() {
             @Override
-            public void onEmit(Integer data) {
-                if (data.equals(0)){
-                    startLoginActivity();
-                }else {
+            public void onEmit(SettingModel data) {
+                if (data.getId() > 0) {
                     startMainActivity();
+                } else {
+                    startLoginActivity();
                 }
             }
 
             @Override
             public void onCompleted() {
-                startLoginActivity();
+
             }
 
             @Override

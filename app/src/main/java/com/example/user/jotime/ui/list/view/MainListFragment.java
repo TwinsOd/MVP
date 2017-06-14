@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     private ListPresenter listPresenter;
     private ProgressDialog progressDialog;
     private TimeAdapter timeAdapter;
+    private List<ItemModel> modelList;
 
     public MainListFragment() {
         // Required empty public constructor
@@ -55,7 +57,7 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.i("***", "onCreate: ");
     }
 
     @Override
@@ -63,15 +65,26 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         mContext = getContext();
-
+        Log.i("***", "onCreateView: ");
         idText = (PersonTextView) view.findViewById(R.id.title_id);
         fromDateText = (DateTextView) view.findViewById(R.id.from_interval);
         tillDateText = (DateTextView) view.findViewById(R.id.till_interval);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycle_view_time);
-        init();
-        getPresenter().getId();
-        loadData();
+
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.i("***", "onViewCreated: ");
+        init();
+        if (settingModel.getId() == 0)
+            getPresenter().getBaseData();
+        else initTextView();
+
+        if (modelList == null)
+            loadData();
     }
 
     private void init() {
@@ -79,20 +92,13 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Loading...");
 
-        Calendar calendar = Calendar.getInstance();
-        settingModel.setTillDate(calendar.getTimeInMillis());
-        calendar.add(Calendar.DAY_OF_MONTH, -7);
-        settingModel.setFromDate(calendar.getTimeInMillis());
-        idText.setOnClickListener(this);
-
-        fromDateText.setLongDate(settingModel.getFromDate());
-        fromDateText.setOnClickListener(this);
-        tillDateText.setLongDate(settingModel.getTillDate());
-        tillDateText.setOnClickListener(this);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
-        timeAdapter = new TimeAdapter(mContext, null, this);
+        timeAdapter = new TimeAdapter(mContext, modelList, this);
         recyclerView.setAdapter(timeAdapter);
+
+        idText.setOnClickListener(this);
+        fromDateText.setOnClickListener(this);
+        tillDateText.setOnClickListener(this);
     }
 
     @Override
@@ -136,6 +142,7 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
                     Toast.makeText(mContext, R.string.no_id_card, Toast.LENGTH_SHORT).show();
                 } else {
                     idText.setId(idEditText.getText().toString());
+                    getPresenter().saveBaseData(settingModel);
                     loadData();
                 }
             }
@@ -157,11 +164,23 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
         if (view.getTag().toString().equals(FROM_INTERVAL_KEY)) {
             settingModel.setFromDate(calendar.getTimeInMillis());
             fromDateText.setLongDate(settingModel.getFromDate());
+            saveNewInterval(calendar);
         } else if (view.getTag().toString().equals(TILL_INTERVAL_KEY)) {
             settingModel.setTillDate(calendar.getTimeInMillis());
             tillDateText.setLongDate(settingModel.getTillDate());
         }
         loadData();
+    }
+
+    private void saveNewInterval(Calendar calendar) {
+        Calendar currentCalendar = Calendar.getInstance();
+        if (currentCalendar.compareTo(calendar) > 0) {
+            int interval = (int) ((currentCalendar.getTimeInMillis() - calendar.getTimeInMillis())
+                    / (1000 * 60 * 60 * 24));
+            settingModel.setIntervalDays(interval);
+            Log.i("***", "saveNewInterval _ interval = " + interval);
+            getPresenter().saveBaseData(settingModel);
+        }
     }
 
     private void loadData() {
@@ -194,14 +213,26 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void showData(@NonNull List<ItemModel> list) {
-        timeAdapter.update(list);
+    public void showList(@NonNull List<ItemModel> list) {
+        modelList = list;
+        timeAdapter.update(modelList);
     }
 
     @Override
-    public void showId(@NonNull int id) {
-        settingModel.setId(id);
-        idText.setId(id);
+    public void showBaseData(@NonNull SettingModel model) {
+        settingModel.setId(model.getId());
+        Calendar calendar = Calendar.getInstance();
+        settingModel.setTillDate(calendar.getTimeInMillis());
+        Log.i("MainListFragment", "IntervalDays = " + model.getIntervalDays());
+        calendar.add(Calendar.DAY_OF_MONTH, -model.getIntervalDays());
+        settingModel.setFromDate(calendar.getTimeInMillis());
+        initTextView();
+    }
+
+    private void initTextView() {
+        idText.setId(settingModel.getId());
+        fromDateText.setLongDate(settingModel.getFromDate());
+        tillDateText.setLongDate(settingModel.getTillDate());
     }
 
     @Override

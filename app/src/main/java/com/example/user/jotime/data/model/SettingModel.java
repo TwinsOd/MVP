@@ -3,14 +3,16 @@ package com.example.user.jotime.data.model;
 
 public class SettingModel {
     private int id;
+    private int intervalDays;
     private long fromDate;
     private long tillDate;
 
     public SettingModel() {
     }
 
-    public SettingModel(int id) {
+    public SettingModel(int id, int intervalDays) {
         this.id = id;
+        this.intervalDays = intervalDays;
     }
 
     public int getId() {
@@ -35,5 +37,13 @@ public class SettingModel {
 
     public void setTillDate(long tillDate) {
         this.tillDate = tillDate;
+    }
+
+    public int getIntervalDays() {
+        return intervalDays;
+    }
+
+    public void setIntervalDays(int intervalDays) {
+        this.intervalDays = intervalDays;
     }
 }

@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,17 +54,10 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.i("***", "onCreate: ");
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         mContext = getContext();
-        Log.i("***", "onCreateView: ");
         idText = (PersonTextView) view.findViewById(R.id.title_id);
         fromDateText = (DateTextView) view.findViewById(R.id.from_interval);
         tillDateText = (DateTextView) view.findViewById(R.id.till_interval);
@@ -77,7 +69,6 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.i("***", "onViewCreated: ");
         init();
         if (settingModel.getId() == 0)
             getPresenter().getBaseData();
@@ -178,7 +169,6 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
             int interval = (int) ((currentCalendar.getTimeInMillis() - calendar.getTimeInMillis())
                     / (1000 * 60 * 60 * 24));
             settingModel.setIntervalDays(interval);
-            Log.i("***", "saveNewInterval _ interval = " + interval);
             getPresenter().saveBaseData(settingModel);
         }
     }
@@ -200,6 +190,7 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void showError(String errorMessage) {
         Toast.makeText(mContext, R.string.error_loading_data, Toast.LENGTH_SHORT).show();
+        hideProgress();
     }
 
     @Override
@@ -223,7 +214,6 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
         settingModel.setId(model.getId());
         Calendar calendar = Calendar.getInstance();
         settingModel.setTillDate(calendar.getTimeInMillis());
-        Log.i("MainListFragment", "IntervalDays = " + model.getIntervalDays());
         calendar.add(Calendar.DAY_OF_MONTH, -model.getIntervalDays());
         settingModel.setFromDate(calendar.getTimeInMillis());
         initTextView();

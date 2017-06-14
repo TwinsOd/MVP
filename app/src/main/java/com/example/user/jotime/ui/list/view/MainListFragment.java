@@ -133,6 +133,7 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
                     Toast.makeText(mContext, R.string.no_id_card, Toast.LENGTH_SHORT).show();
                 } else {
                     idText.setId(idEditText.getText().toString());
+                    settingModel.setId(Integer.valueOf(idEditText.getText().toString()));
                     getPresenter().saveBaseData(settingModel);
                     loadData();
                 }

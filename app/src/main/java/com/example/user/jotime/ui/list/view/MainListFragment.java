@@ -123,6 +123,7 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
         dialog.setTitle(R.string.choose_new_id);
         final EditText idEditText = new EditText(mContext);
+        idEditText.setGravity(View.TEXT_ALIGNMENT_CENTER);
         idEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         dialog.setView(idEditText);
 

@@ -14,6 +14,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -57,6 +60,7 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
+        setHasOptionsMenu(true);
         mContext = getContext();
         idText = (PersonTextView) view.findViewById(R.id.title_id);
         fromDateText = (DateTextView) view.findViewById(R.id.from_interval);
@@ -230,5 +234,20 @@ public class MainListFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onClick(List<String> list) {
         getPresenter().onDateClick(list);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_list_fragment, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.update) {
+            loadData();
+        }
+        return true;
     }
 }

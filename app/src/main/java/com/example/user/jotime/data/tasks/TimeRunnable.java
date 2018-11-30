@@ -96,13 +96,36 @@ public class TimeRunnable implements Runnable {
         Elements elements = body.select("tbody");
         for (Element e : elements) {
             Elements column = e.select("tr");
+            Log.i("TimeRunnable_column", "column.size() = "  + column.size());
             for (Element mod : column){
-                Log.i("TimeRunnable_el", "----------------------------------");
-//                Log.i("TimeRunnable_el", mod.text());
+                Log.i("TimeRunnable_column", "----------------------------------");
+                Log.i("TimeRunnable_column", mod.html());
                 Elements values = mod.select("td");
+                int i = 0;
                 for (Element val:values){
-                    Log.i("TimeRunnable_el", val
-                            .text());
+                    Log.i("TimeRunnable_values", "i = " + i++);
+
+                    Log.i("TimeRunnable_values", val.text());
+
+//                    if (true){//dont work
+//                        Elements likes = val.select("td");
+//                        for (Element like:likes){
+//                            Log.i("TimeRunnable_likes", like.text());
+//                            Log.i("TimeRunnable_likes", like.html());
+//                        }
+//                    }
+
+
+
+//                    2018-11-30 21:32:17.862 19683-19721/? I/TimeRunnable_el: sexxx простым языком
+//                    2018-11-30 21:32:17.862 19683-19721/? I/TimeRunnable_el: Добрый вечер, с Вами Ольга Великолепная)
+//                    2018-11-30 21:32:17.862 19683-19721/? I/TimeRunnable_el: Без категории
+
+//                    Log.i("TimeRunnable_el", val.html());
+// I/TimeRunnable_el: <a title="Просмотреть профиль"><img src="/components/com_smartshoutbox/assets/images/avatar.png" title="sexxx простым языком"></a>
+// I/TimeRunnable_el: <a title="Ответить sexxx простым языком" onclick="addName(this, '8168')">sexxx простым языком</a> <input type="hidden" id="fullname-8168" name="fullname" value="sexxx простым языком">
+// I/TimeRunnable_el: Добрый вечер, с Вами Ольга Великолепная)
+// I/TimeRunnable_el: <a id="category-0" class="search-category" title="Фильтр по этой категории"> Без категории </a>
                 }
             }
             Log.i("TimeRunnable_el", column.toString());

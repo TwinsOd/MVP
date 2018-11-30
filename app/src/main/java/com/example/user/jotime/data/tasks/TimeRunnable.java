@@ -95,7 +95,18 @@ public class TimeRunnable implements Runnable {
         final List<String> list = new ArrayList<>();
         Elements elements = body.select("tbody");
         for (Element e : elements) {
-            Log.i("TimeRunnable_el", e.text());
+            Elements column = e.select("tr");
+            for (Element mod : column){
+                Log.i("TimeRunnable_el", "----------------------------------");
+//                Log.i("TimeRunnable_el", mod.text());
+                Elements values = mod.select("td");
+                for (Element val:values){
+                    Log.i("TimeRunnable_el", val
+                            .text());
+                }
+            }
+            Log.i("TimeRunnable_el", column.toString());
+            Log.i("TimeRunnable_el", "s " + column.size());
         }
 //        elements.select("span").remove();
         for (Element e : elements) list.add(e.text());

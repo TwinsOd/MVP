@@ -36,39 +36,49 @@ public class TimeRunnable implements Runnable {
     @Override
     public void run() {
         final Map<String, String> params = new HashMap<>();
-        params.put("card_code_dec", String.valueOf(model.getId()));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        params.put("date_from", formatter.format(model.getFromDate()));
-        params.put("date_till", formatter.format(model.getTillDate()));
-        Log.i("TimeRunnable", "formatter.format(model.getTillDate()): " + formatter.format(model.getTillDate()));
+        params.put("option", "com_smartshoutbox");
+        params.put("task", "addshout");
+
+
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+//        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        params.put("date_from", formatter.format(model.getFromDate()));
+//        params.put("date_till", formatter.format(model.getTillDate()));
+//        Log.i("TimeRunnable", "formatter.format(model.getTillDate()): " + formatter.format(model.getTillDate()));
 
         final Element body;
         List<ItemModel> listModels = new ArrayList<>();
         try {
-            String URL = "http://jo.time";
-            body = Jsoup.connect(URL).data(params).post().body();
+            String URL = "http://pozitiv.fm";
+            body = Jsoup.connect(URL).post().body();
+            Log.i("TimeRunnable", "length " + body.text().length());
             Log.i("TimeRunnable", body.text());
 
             List<String> missingTimeList = getMissingTime(body);
+            Log.i("TimeRunnable", missingTimeList.toString());
+            Log.i("TimeRunnable", "size " + missingTimeList.size());
             List<String> datesList = getDates(body);
+            Log.i("TimeRunnable", "size " + missingTimeList.size());
+            Log.i("TimeRunnable", missingTimeList.toString());
             List<String> listLog = getListLog(body);
+            Log.i("TimeRunnable", listLog.toString());
 
-            int i = 0;
-            for (String missingTime : missingTimeList) {
-                listModels.add(new ItemModel(datesList.get(i), missingTime));
-                i++;
-            }
 
-            i = -1;
-            for (String str : listLog) {
-                if (str.lastIndexOf("Дата") == 0) {
-                    i++;
-                } else
-                    listModels.get(i).getLogList().add(str);
-            }
-
-            mainUiHandler.post(new CallbackToUI(listModels));
+//            int i = 0;
+//            for (String missingTime : missingTimeList) {
+//                listModels.add(new ItemModel(datesList.get(i), missingTime));
+//                i++;
+//            }
+//
+//            i = -1;
+//            for (String str : listLog) {
+//                if (str.lastIndexOf("Дата") == 0) {
+//                    i++;
+//                } else
+//                    listModels.get(i).getLogList().add(str);
+//            }
+//
+//            mainUiHandler.post(new CallbackToUI(listModels));
         } catch (final IOException e) {
             e.printStackTrace();
 
@@ -83,15 +93,18 @@ public class TimeRunnable implements Runnable {
 
     private static List<String> getMissingTime(Element body) {
         final List<String> list = new ArrayList<>();
-        Elements elements = body.select("td.red b");
-        elements.select("span").remove();
+        Elements elements = body.select("tbody");
+        for (Element e : elements) {
+            Log.i("TimeRunnable_el", e.text());
+        }
+//        elements.select("span").remove();
         for (Element e : elements) list.add(e.text());
         return list;
     }
 
     private static List<String> getDates(Element body) {
         final List<String> list = new ArrayList<>();
-        Elements elements = body.select("table.stat tr:lt(2)>td:lt(1)");
+        Elements elements = body.select("tr class");
         for (Element e : elements) list.add(e.text());
         return list;
     }
